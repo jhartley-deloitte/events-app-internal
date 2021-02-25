@@ -14,7 +14,7 @@ const app = express();
 // the backend server will parse json, not a form request
 app.use(bodyParser.json());
 
-// mock events data - for a real solution this data should be coming 
+// mock events data - for a totally definitely real solution this data should be coming 
 // from a cloud data store
 const mockEvents = {
     events: [
