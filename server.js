@@ -18,18 +18,7 @@ app.use(bodyParser.json())
 // from a cloud data store
 const mockEvents = {
   events: [
-    { title: 'an event', id: 1, description: 'something really cool' },
-    { title: 'another event', id: 2, description: 'something even cooler' },
-    {
-      title: 'another another event',
-      id: 3,
-      description: 'the coolest event yet'
-    },
-    {
-      title: 'the best event',
-      id: 4,
-      description: 'this event will be the best ever'
-    }
+    { title: 'an event', id: 1, description: 'something really cool', color: '#F77F00', likes: 0 }
   ]
 }
 
@@ -55,7 +44,6 @@ function getEvents(req, res) {
         snapshot.docs.forEach(element => {
           const el = element.data()
           el.id = element.id
-          //el.likes = 0
           ret.events.push(el)
         }, this)
         console.log(ret)
@@ -99,7 +87,8 @@ app.post('/event', (req, res) => {
   // create a new object from the json data and add an id
   const ev = {
     title: req.body.title,
-    description: req.body.description
+    description: req.body.description,
+    color: req.body.color
   }
 
   // this will create the Events collection if it does not exist
@@ -107,7 +96,6 @@ app.post('/event', (req, res) => {
     .collection('Events')
     .add(ev)
     .then(ret => {
-      console.log(ret)
       getEvents(req, res)
     })
 })
