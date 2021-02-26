@@ -35,13 +35,20 @@ const firestore = new Firestore(
     }
 );
 
+const addLike = (id, likes) => {
+    return firestore.collection("Events").doc(id).update({ likes })
+}
+
 function getEvents(req, res) {
     firestore.collection("Events").get()
         .then((snapshot) => {
             if (!snapshot.empty) {
                 const ret = { events: []};
                 snapshot.docs.forEach(element => {
-                    ret.events.push(element.data());
+                    const el = element.data()
+                    el.id = element.id
+                    //el.likes = 0
+                    ret.events.push(el)
                 }, this);
                 console.log(ret);
                 res.json(ret);
@@ -67,6 +74,12 @@ app.get('/version', (req, res) => {
 });
 
 
+app.put('/event/:id/like', async (req, res) => {
+    const { id, likes } = req.body
+    await addLike(id, likes)
+    res.sendStatus(200)
+})
+
 // mock events endpoint. this would be replaced by a call to a datastore
 // if you went on to develop this as a real application.
 app.get('/events', (req, res) => {
@@ -81,11 +94,12 @@ app.post('/event', (req, res) => {
     // create a new object from the json data and add an id
     const ev = { 
         title: req.body.title, 
-        description: req.body.description,
-        id : mockEvents.events.length + 1
+        description: req.body.description
      }
-// this will create the Events collection if it does not exist
+    
+     // this will create the Events collection if it does not exist
     firestore.collection("Events").add(ev).then(ret => {
+        console.log(ret)
         getEvents(req, res);
     });
 
